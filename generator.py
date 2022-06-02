@@ -2,16 +2,16 @@ for i in range(10):
     for j in range(10):
         for m in range(10):
             for n in range(10):
-                input1 = (i + 1) * (j + 1) / 100
-                input2 = (i + 1) * (m + 1) / 100
-                input3 = (i + 1) * (n + 1) / 100
-                input4 = (j + 1) * (m + 1) / 100
-                input5 = (j + 1) * (n + 1) / 100
-                input6 = (m + 1) * (n + 1) / 100
-                input7 = (i + 1) * (j + 1) * (m + 1) / 1000
-                input8 = (i + 1) * (j + 1) * (n + 1) / 1000
-                input9 = (i + 1) * (m + 1) * (n + 1) / 1000
-                input10 = (j + 1) * (m + 1) * (n + 1) / 1000
+                input1 = (i + 1) * (j + 1)
+                input2 = (i + 1) * (m + 1)
+                input3 = (i + 1) * (n + 1)
+                input4 = (j + 1) * (m + 1)
+                input5 = (j + 1) * (n + 1)
+                input6 = (m + 1) * (n + 1)
+                input7 = (i + 1) * (j + 1) * (m + 1)
+                input8 = (i + 1) * (j + 1) * (n + 1)
+                input9 = (i + 1) * (m + 1) * (n + 1)
+                input10 = (j + 1) * (m + 1) * (n + 1)
                 result = str(input1) + ',' + str(input2) + ',' + str(input3) + ',' + str(input4) + \
                          ',' + str(input5) + ',' + str(input6) + ',' + str(input7) + ',' + str(input8) + \
                          ',' + str(input9) + ',' + str(input10) + ',' + str(input6) + ',' + str(input5) + \
