@@ -5,7 +5,7 @@ import torch.nn as nn
 from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 
-EPOCHS = 1
+EPOCHS = 50
 batch_size = 50
 
 # dataset
@@ -26,32 +26,32 @@ class CNN(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(
                 in_channels=1,
-                out_channels=4,
+                out_channels=8,
                 kernel_size=3,
                 stride=1,
                 padding=1
             ),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2)
+            nn.AvgPool2d(kernel_size=2)
         )
-        # self.conv2 = nn.Sequential(
-        #     nn.Conv2d(4, 2, 3, 1, 1),
-        #     nn.ReLU(),
-        #     nn.MaxPool2d(2)
-        # )
-        self.out = nn.Linear(4 * 2 * 2, 4)
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(8, 16, 3, 1, 1),
+            nn.ReLU(),
+            nn.AvgPool2d(2)
+        )
+        self.out = nn.Linear(16, 2)
 
     def forward(self, x):
         x = self.conv1(x)
-        # x = self.conv2(x)
+        x = self.conv2(x)
         x = x.view(x.size(0), -1)
         output = self.out(x)
         return output
 
 train_data = pd.read_csv(r'train_data.csv')
 x = train_data.iloc[:, : 16].to_numpy()
-x = x.reshape(len(x), 1, 4, 4)
 y = train_data['label1'].to_numpy()
+x = x.reshape(len(x), 1, 4, 4)
 x = torch.tensor(x, dtype=torch.float)
 dataset = TrainDataset(x, y)
 data_loader = DataLoader(dataset, batch_size=batch_size, num_workers=0, shuffle=True, drop_last=False)
@@ -65,11 +65,31 @@ print(cnn)
 optimizer = torch.optim.Adam(cnn.parameters(), lr=0.05)
 loss_func = nn.CrossEntropyLoss()
 
-for epoch in range(5):
+for epoch in range(EPOCHS):
     for i, (x, y) in enumerate(data_loader):
         output = cnn(x)
         loss = loss_func(output, y)
+        # print(output)
         print('Epoch: ' + str(epoch) + ' i=' + str(i) + ' loss=' + str(loss))
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+
+correct = 0
+total = 0
+for (x, y) in data_loader:
+    output = cnn(x)
+    # prediction = torch.max(output, dim=1)
+    # total += y.size(0)
+    for i in range(len(output)):
+        p1 = output[i][0]
+        p2 = output[i][1]
+        if (p1 > p2):
+            val = 0
+        else:
+            val = 1
+        if (val == y[i]):
+            correct += 1
+    total += len(y)
+    # print(y, val)
+print(correct, total)
