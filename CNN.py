@@ -5,8 +5,8 @@ import torch.nn as nn
 from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 
-EPOCHS = 50
-batch_size = 50
+EPOCHS = 30
+batch_size = 100
 
 # dataset
 class TrainDataset(Dataset):
@@ -35,11 +35,11 @@ class CNN(nn.Module):
             nn.AvgPool2d(kernel_size=2)
         )
         self.conv2 = nn.Sequential(
-            nn.Conv2d(8, 16, 3, 1, 1),
+            nn.Conv2d(8, 32, 3, 1, 1),
             nn.ReLU(),
             nn.AvgPool2d(2)
         )
-        self.out = nn.Linear(16, 2)
+        self.out = nn.Linear(32, 3)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -66,14 +66,16 @@ optimizer = torch.optim.Adam(cnn.parameters(), lr=0.05)
 loss_func = nn.CrossEntropyLoss()
 
 for epoch in range(EPOCHS):
-    for i, (x, y) in enumerate(data_loader):
-        output = cnn(x)
-        loss = loss_func(output, y)
+    for step, (x, y) in enumerate(data_loader):
+        b_x = Variable(x)
+        b_y = Variable(y)
+        output = cnn(b_x)
+        loss = loss_func(output, b_y)
         # print(output)
-        print('Epoch: ' + str(epoch) + ' i=' + str(i) + ' loss=' + str(loss))
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        print('Epoch: ' + str(epoch) + ' step=' + str(step) + ' loss=' + str(loss))
 
 correct = 0
 total = 0
@@ -84,12 +86,15 @@ for (x, y) in data_loader:
     for i in range(len(output)):
         p1 = output[i][0]
         p2 = output[i][1]
-        if (p1 > p2):
+        p3 = output[i][2]
+        if (p1 > p2 and p1 > p3):
             val = 0
-        else:
+        elif(p2 > p1 and p2 > p3):
             val = 1
+        else:
+            val = 2
+        # print(p1, p2, p3, val, y[i])
         if (val == y[i]):
             correct += 1
     total += len(y)
-    # print(y, val)
 print(correct, total)

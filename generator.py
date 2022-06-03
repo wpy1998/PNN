@@ -1,15 +1,15 @@
 import math
 
-cri = 25
+cri = 1
 c1 = 0
 c2 = 0
 print(math.pi / 6)
-for i in range(11):
-    for j in range(11):
-        for k in range(11):
-            a = i - 5
-            b = j - 5
-            c = k - 5
+for i in range(21):
+    for j in range(21):
+        for k in range(21):
+            a = (i - 10) / 10
+            b = (j - 10) / 10
+            c = (k - 10) / 10
             input1 = a * a
             input2 = b * b
             input3 = c * c
@@ -22,18 +22,21 @@ for i in range(11):
             input10 = input1 + input7
             input11 = input2 + input8
             input12 = input3 + input9
-            input13 = 1
-            input14 = 1
-            input15 = 1
-            input16 = 1
+            input13 = a + 0.1
+            input14 = b + 0.1
+            input15 = c + 0.1
+            input16 = 0
             if((input1 + input2 + input3) <= cri):
                 val = 0
                 c1 += 1
-            else:
+            elif(a > 0):
                 val = 1
                 c2 += 1
+            else:
+                val = 2
+                c2 += 1
             print(cri, (input1 + input2 + input3), val, c1, c2)
-            result = str(input1) + ',' + str(input12) + ',' + \
+            result = str(input1) + ',' + str(input2) + ',' + \
                 str(input3) + ',' + str(input4) + ',' + \
                 str(input5) + ',' + str(input6) + ',' + \
                 str(input7) + ',' + str(input8) + ',' + \

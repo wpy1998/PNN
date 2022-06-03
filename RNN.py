@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 import pandas as pd
 
@@ -14,8 +15,8 @@ class TorchDataset(Dataset):
     def __len__(self):
         return self.x.shape[0]
 
-EPOCHS = 50
-batch_size = 50
+EPOCHS = 30
+batch_size = 100
 
 train_data = pd.read_csv(r'train_data.csv')
 x = train_data.iloc[:, : 16].to_numpy()
@@ -36,7 +37,7 @@ class RNN(nn.Module):
             batch_first=True
         )
 
-        self.out = nn.Linear(64, 2)
+        self.out = nn.Linear(64, 3)
 
     def forward(self, x):
         # x shape (batch, time_step, input_size)
@@ -53,7 +54,9 @@ print(rnn)
 optimizer = torch.optim.Adam(rnn.parameters(), lr=0.05)
 loss_func = nn.CrossEntropyLoss()
 for epoch in range(EPOCHS):
-    for step, (b_x, b_y) in enumerate(data_loader):
+    for step, (x, y) in enumerate(data_loader):
+        b_x = Variable(x)
+        b_y = Variable(y)
         b_x = b_x.view(-1, 4, 4)
         output = rnn(b_x)
         # print(output)
@@ -61,7 +64,7 @@ for epoch in range(EPOCHS):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        print('loss = ', loss)
+        print('Epoch: ' + str(epoch) + ' step=' + str(step) + ' loss=' + str(loss))
 
 correct = 0
 total = 0
@@ -72,12 +75,15 @@ for (x, y) in data_loader:
     for i in range(len(output)):
         p1 = output[i][0]
         p2 = output[i][1]
-        if(p1 > p2):
+        p3 = output[i][2]
+        if (p1 > p2 and p1 > p3):
             val = 0
-        else:
+        elif(p2 > p1 and p2 > p3):
             val = 1
-        if(val == y[i]):
+        else:
+            val = 2
+        # print(p1, p2, p3, val, y[i])
+        if (val == y[i]):
             correct += 1
     total += len(y)
-    # print(y, val)
 print(correct, total)
